@@ -16,9 +16,12 @@ This work intends to extend the findings of [Abbade et al. on Performance Compar
 + Java - [Spring](https://spring.io/)
 + Java - [Jooby](https://github.com/jooby-project/jooby)
 + Java - [Proteus](https://github.com/noboomu/proteus)
++ Java - [Vertx](https://vertx.io/)
 + Javascript - [Node.js](https://nodejs.org/en/)
 + Javascript - [Express](https://expressjs.com/)
 + Javascript - [Restify](http://restify.com/)
++ Javascript - [Fastify](https://www.fastify.io/)
++ Javascript - [Koa](https://koajs.com/)
 + PHP - [Laravel](https://laravel.com/)
 + Scala - [akka](https://akka.io/)
 + C# - [.net](https://docs.microsoft.com/en-us/dotnet/)
@@ -36,6 +39,8 @@ This work intends to extend the findings of [Abbade et al. on Performance Compar
 + R - [Plumber](https://www.rplumber.io/)
 + Rust - [Rocket](https://github.com/SergioBenitez/Rocket)
 + Rust - [Actix](https://actix.rs/)
++ Elixir - [Phoenix](https://www.phoenixframework.org/)
++ Kotlin - [Ktor](https://ktor.io/)
 
 The main objective is to test different languages and frameworks, both sync and async, to understand:
 
