@@ -1,0 +1,9 @@
+version: "3.5"
+
+services: 
+    app:
+        build: .
+        ports: 
+            - 80:6543
+        volumes: 
+            - .:/usr/src/app
