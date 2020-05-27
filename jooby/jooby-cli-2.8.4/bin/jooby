@@ -1,0 +1,834 @@
+#!/usr/bin/env sh
+
+#
+# Shell script to launch Java app jooby
+#
+# Description: Jooby Command Line Interface
+#
+# Auto generated via Stork Launcher v3.0.0 made by Fizzed, Inc.
+#  Web: http://fizzed.com
+#  Twitter: http://twitter.com/fizzed_inc
+#  Github: https://github.com/fizzed/stork
+#
+
+#
+# constants
+#
+
+NAME="jooby"
+TYPE="CONSOLE"
+MAIN_CLASS="io.jooby.cli.Cli"
+[ -z "$WORKING_DIR_MODE" ] && WORKING_DIR_MODE="RETAIN"
+[ -z "$MIN_JAVA_VERSION" ] && MIN_JAVA_VERSION="1.8"
+[ -z "$SYMLINK_JAVA" ] && SYMLINK_JAVA="1"
+[ -z "$INCLUDE_JAVA_XRS" ] && INCLUDE_JAVA_XRS="1"
+
+#
+# working directory
+#
+
+# resolve links - $0 may be a softlink
+PRG="$0"
+
+while [ -h "$PRG" ] ; do
+  ls=`ls -ld "$PRG"`
+  link=`expr "$ls" : '.*-> \(.*\)$'`
+  if expr "$link" : '/.*' > /dev/null; then
+    PRG="$link"
+  else
+    PRG=`dirname "$PRG"`/"$link"
+  fi
+done
+
+# save current working directory
+INITIAL_WORKING_DIR="`pwd`"
+
+# change working directory to app home
+PRGDIR=$(dirname "$PRG")
+cd "$PRGDIR/.."
+
+# application home is now current directory
+APP_HOME="`pwd`"
+
+# revert to initial working directory?
+if [ "$WORKING_DIR_MODE" = "RETAIN" ]; then
+  cd "$INITIAL_WORKING_DIR"
+fi
+
+#
+# settings
+# either change default in here OR just pass in as environment variable to
+# override the default value here
+# e.g. RUN_DIR=/tmp bin/$NAME
+#
+
+# if empty pid file will be created in <run_dir>/<app_name>.pid
+# provide full path if you want to override
+[ -z "$PID_FILE" ] && PID_FILE=""
+
+# min and max mem (in MB); leave empty for java defaults
+[ -z "$JAVA_MIN_MEM" ] && JAVA_MIN_MEM=""
+[ -z "$JAVA_MAX_MEM" ] && JAVA_MAX_MEM=""
+
+# min and max mem as a percent of system memory
+# they have priority over JAVA_MIN_MEM and JAVA_MAX_MEM if set
+[ -z "$JAVA_MIN_MEM_PCT" ] && JAVA_MIN_MEM_PCT=""
+[ -z "$JAVA_MAX_MEM_PCT" ] && JAVA_MAX_MEM_PCT=""
+
+# application run dir (e.g. for pid file)
+[ -z "$RUN_DIR" ] && RUN_DIR="run"
+
+# application log dir (e.g. for [name.out] file)
+[ -z "$LOG_DIR" ] && LOG_DIR="log"
+
+[ -z "$LAUNCHER_DEBUG" ] && LAUNCHER_DEBUG="0"
+
+#
+# Variables
+#
+
+[ -z "$APP_ARGS" ] && APP_ARGS=""
+[ -z "$EXTRA_APP_ARGS" ] && EXTRA_APP_ARGS=""
+[ -z "$JAVA_ARGS" ] && JAVA_ARGS=""
+[ -z "$EXTRA_JAVA_ARGS" ] && EXTRA_JAVA_ARGS=""
+[ -z "$LIB_DIR" ] && LIB_DIR="lib"
+[ -z "$SKIP_PID_CHECK" ] && SKIP_PID_CHECK="0"
+
+
+isAbsolutePath()
+{
+    local p="$1"
+    if [ "$(echo $p | cut -c 1)" = "/" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+
+#
+# is run directory absolute or relative to app home?
+#
+if [ `isAbsolutePath "$RUN_DIR"` ]; then
+    # absolute path
+    APP_RUN_DIR="$RUN_DIR"
+    APP_RUN_DIR_DEBUG="$RUN_DIR"
+    APP_RUN_DIR_ABS="$RUN_DIR"
+else
+    if [ "$WORKING_DIR_MODE" = "RETAIN" ]; then
+        # relative path to app home (but use absolute version)
+        APP_RUN_DIR="$APP_HOME/$RUN_DIR"
+    else
+        # relative path to app home (use relative version)
+        APP_RUN_DIR="$RUN_DIR"
+    fi
+    APP_RUN_DIR_DEBUG="<app_home>/$RUN_DIR"
+    APP_RUN_DIR_ABS="$APP_HOME/$RUN_DIR"
+fi
+
+
+#
+# is log directory absolute or relative to app home?
+#
+if [ `isAbsolutePath "$LOG_DIR"` ]; then
+    # absolute path
+    APP_LOG_DIR="$LOG_DIR"
+    APP_LOG_DIR_DEBUG="$LOG_DIR"
+    APP_LOG_DIR_ABS="$LOG_DIR"
+else
+    if [ $WORKING_DIR_MODE = "RETAIN" ]; then
+        # relative path to app home (but use absolute version)
+        APP_LOG_DIR="$APP_HOME/$LOG_DIR"
+    else
+        # relative path to app home (use relative version)
+        APP_LOG_DIR="$LOG_DIR"
+    fi
+    APP_LOG_DIR_DEBUG="<app_home>/$LOG_DIR"
+    APP_LOG_DIR_ABS="$APP_HOME/$LOG_DIR"
+fi
+
+
+#
+# pid handling
+#
+if [ ! -z $PID_FILE ]; then
+    APP_PID_FILE="$PID_FILE"
+    APP_PID_FILE_DEBUG="$PID_FILE"
+else
+    APP_PID_FILE="$APP_RUN_DIR/$NAME.pid"
+    APP_PID_FILE_DEBUG="$APP_RUN_DIR_DEBUG/$NAME.pid"
+fi
+
+
+#
+# do we need verify that the run directory is writable?
+#
+
+# will the run directory be used for something?
+if [ "$TYPE" = "DAEMON" ] || [ "$SYMLINK_JAVA" = "1" ]; then
+    if [ ! -d "$APP_RUN_DIR" ]; then
+        mkdir -p "$APP_RUN_DIR" 2>/dev/null
+        if [ ! -d "$APP_RUN_DIR" ]; then
+            echo "Unable to create run dir: $APP_RUN_DIR_ABS (check permissions; is user `whoami` owner?)"
+            exit 1
+        fi
+    fi
+    if [ ! -w "$APP_RUN_DIR" ]; then
+        echo "Unable to write files in run dir: $APP_RUN_DIR_ABS (check permissions; is user `whoami` owner?)"
+        exit 1
+    fi
+fi
+
+#
+# functions
+#
+
+logLauncherDebug()
+{
+    if [ "$LAUNCHER_DEBUG" = "1" ]; then
+        echo "[LAUNCHER] $1" >&2
+    fi
+}
+
+logJavaSearchDebug()
+{
+    if [ "$LAUNCHER_DEBUG" = "1" ]; then
+        echo "[JAVA_SEARCH] $1" >&2
+    fi
+}
+
+quietWhich()
+{
+    # $(which bad) results in output we want to ignore
+    W=$(which $1 2>/dev/null)
+    if [ $? -eq 0 ]; then
+        echo $W
+    fi
+}
+
+# RUN_DIR=`findDirectory -w /var/run /usr/var/run /tmp`
+findDirectory()
+{
+    OP=$1
+    shift
+    for L in $* ; do
+        [ $OP $L ] || continue
+        echo $L
+        break
+    done
+}
+
+getOperatingSystemName()
+{
+    local u=$(uname)
+    case "$u" in
+        Linux)
+            echo "linux"
+            ;;
+        Darwin)
+            echo "osx"
+            ;;
+        FreeBSD)
+            echo "freebsd"
+            ;;
+        OpenBSD)
+            echo "openbsd"
+            ;;
+        CYGWIN*|MINGW*|MSYS*)
+            echo "windows"
+            ;;
+        *)
+            echo "unknown"
+            ;;
+    esac
+}
+
+isOperatingSystemOSX()
+{
+    local p=`getOperatingSystemName`
+    if [ "$p" = "osx" ]; then
+      return 0
+    else
+      return 1
+    fi
+}
+
+isOperatingSystemLinux()
+{
+    local p=`getOperatingSystemName`
+    if [ "$p" = "linux" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+isOperatingSystemFreeBSD()
+{
+    local p=`getOperatingSystemName`
+    if [ "$p" = "freebsd" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+isOperatingSystemOpenBSD()
+{
+    local p=`getOperatingSystemName`
+    if [ "$p" = "openbsd" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+isOperatingSystemWindows()
+{
+    local p=`getOperatingSystemName`
+    if [ "$p" = "windows" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+getSystemMemoryMB()
+{
+    local mem_mb=""
+
+    # linux: grep MemTotal /proc/meminfo | awk '{print $2}' -> 32930344 (as KB)
+    if [ -f /proc/meminfo ]; then
+        local mem_kb=`grep MemTotal /proc/meminfo | awk '{print $2}'`
+        if [ ! -z $mem_kb ]; then
+            # convert kilobytes to megabytes
+            mem_mb=$(expr $mem_kb / 1024)
+        fi
+    fi
+
+    # works on mac osx
+    if [ -z $mem_mb ] && isOperatingSystemOSX; then
+        local mem_bytes=`sysctl -a 2>/dev/null | grep "hw.memsize" | head -n 1 | awk -F'=' '{print $2}'`
+        if [ ! -z $mem_bytes ]; then
+            # convert bytes to megabytes
+            mem_mb=$(expr $mem_bytes / 1024 / 1024)
+        fi
+    fi
+
+    # try sysctl for hw.physmem works on freebsd/openbsd
+    if [ -z $mem_mb ]; then
+        local mem_bytes=`sysctl -a 2>/dev/null | grep "hw.physmem" | head -n 1 | awk -F'[:=]' '{print $2}'`
+        if [ ! -z $mem_bytes ]; then
+            # convert bytes to megabytes
+            mem_mb=$(expr $mem_bytes / 1024 / 1024)
+        fi
+    fi
+
+    if [ -z $mem_mb ]; then
+        echo 0
+    else
+        echo $mem_mb
+    fi
+}
+
+pctOf()
+{
+  num=$(($1 * $2))
+  echo $(($num / 100))
+}
+
+readAllLinks()
+{
+  # prefer realpath
+  if [ ! -z `quietWhich realpath` ]; then
+    J=$(realpath $1)
+  elif [ ! -z `quietWhich readlink` ]; then
+    # fallback to manually reading symlinks
+    J=$1
+    while [ -L $J ]; do
+      J=`readlink $J`
+    done
+  else
+    J=$1
+  fi
+  echo $J
+}
+
+
+# appended_path=`appendPath $1 $2`
+appendPath()
+{
+  if [ -z "$1" ]; then
+    echo "$2"
+  else
+    echo "$1:$2"
+  fi
+}
+
+
+# JAVA_VERSION=`javaVersion "$JAVA_HOME/jre/bin/java"`
+getJavaVersion()
+{
+    local java_bin="$1"
+    #logJavaSearchDebug "getJavaVersion from: $java_bin"
+    #local java_ver_line=`"$java_bin" -version 2>&1 | head -1`
+    #logJavaSearchDebug "getJavaVersion ver line: $java_ver_line"
+    #echo `expr "'$java_ver_line'" : '.*version.*"\(.*\)"'`
+    # extracts 1.8.0_144 or 9.0.1
+    local java_ver=`"$java_bin" -version 2>&1 | grep "version" | awk '{print $3}' | tr -d \"`
+    echo "$java_ver"
+}
+
+
+# $java_bins=`findAllJavaExecutables`
+# returns: all java executables separated by colon "/usr/bin/java:/usr/lib/jvm/bin/java"
+findAllJavaExecutables()
+{
+    local java_cmds=""
+
+    # is JAVA_HOME set?
+    logJavaSearchDebug "searching JAVA_HOME..."
+    if [ ! -z "$JAVA_HOME" ]; then
+        local jre_bin="$JAVA_HOME/jre/bin/java"
+        local jdk_bin="$JAVA_HOME/bin/java"
+        if [ -x "$jre_bin" ]; then
+            logJavaSearchDebug "found $jre_bin"
+            java_cmds=`appendPath "$java_cmds" "$jre_bin"`
+        fi
+        if [ -x "$jdk_bin" ]; then
+            logJavaSearchDebug "found $jdk_bin"
+            java_cmds=`appendPath "$java_cmds" "$jdk_bin"`
+        fi
+    fi;
+
+    # is java in path
+    logJavaSearchDebug "searching PATH..."
+    local which_java=`quietWhich java`
+    if [ ! -z "$which_java" ]; then
+        if [ -x "$which_java" ]; then
+            logJavaSearchDebug "found $which_java"
+            java_cmds=`appendPath "$java_cmds" "$which_java"`
+        fi
+    fi
+
+    # special case on mac os x
+    if isOperatingSystemOSX; then
+        local osx_java_home=""
+        logJavaSearchDebug "trying /usr/libexec/java_home..."
+        if [ -x '/usr/libexec/java_home' ]; then
+            osx_java_home=`/usr/libexec/java_home`
+        fi
+        if [ ! -z $osx_java_home ]; then
+            if [ -x "$osx_java_home/bin" ]; then
+                logJavaSearchDebug "found $osx_java_home/bin"
+                java_cmds=`appendPath "$java_cmds" "$osx_java_home/bin"`
+            fi
+        fi
+    fi
+
+    # search all known java home locations for java binaries
+    # linux openjdk: /usr/lib/jvm
+    # centos/redhat sunjdk: /usr/java
+    
+    local java_home_parents=""
+
+    # common install dir on linux
+    java_home_parents=`appendPath "$java_home_parents" "/usr/lib/jvm/*"`
+    java_home_parents=`appendPath "$java_home_parents" "/usr/java/*"`
+    
+    # common install dir on freebsd
+    java_home_parents=`appendPath "$java_home_parents" "/usr/local/openjdk*"`
+
+    # common install dir on openbsd
+    java_home_parents=`appendPath "$java_home_parents" "/usr/local/jdk*"`
+    java_home_parents=`appendPath "$java_home_parents" "/usr/local/jre*"`
+    
+    if isOperatingSystemOSX; then
+        java_home_parents=`appendPath "$java_home_parents" "/Library/Internet Plug-Ins/Java*/Contents/Home"`
+        #java_home_parents=`appendPath "$java_home_parents" "/System/Library/Frameworks/JavaVM.framework/Versions/*"`
+        java_home_parents=`appendPath "$java_home_parents" "/Library/Java/JavaVirtualMachines/*/Contents/Home"`
+        java_home_parents=`appendPath "$java_home_parents" "/System/Library/Java/JavaVirtualMachines/*/Contents/Home"`
+    fi
+
+    if isOperatingSystemWindows; then
+        java_home_parents=`appendPath "$java_home_parents" "/c/Program Files/Java/*"`
+    fi
+    
+    logJavaSearchDebug "trying well-known java homes..."
+    local IFS=":"
+    for java_home_parent in $java_home_parents; do
+        #echo "searching java_home_parent: $java_home_parent"
+	for maybe_java_home in $java_home_parent; do
+            [ -d "$maybe_java_home" ] || continue   
+
+            local jre_bin="$maybe_java_home/jre/bin/java"
+            local jdk_bin="$maybe_java_home/bin/java"
+
+            if [ -x "$jre_bin" ]; then
+                logJavaSearchDebug "found $jre_bin"
+                java_cmds=`appendPath "$java_cmds" "$jre_bin"`
+            elif [ -x "$jdk_bin" ]; then
+                logJavaSearchDebug "found $jdk_bin"
+                java_cmds=`appendPath "$java_cmds" "$jdk_bin"`
+            fi
+        done
+    done
+
+    echo "$java_cmds"
+}
+
+# java_maj_ver=`parseJavaMajorVersion 1.7`
+# returns: "7"
+parseJavaMajorVersion()
+{
+    local version="$1"
+    local major=`echo "$version" | awk '{split($0, array, ".")} END{print array[1]}'`
+    local minor=`echo "$version" | awk '{split($0, array, ".")} END{print array[2]}'`
+    local patch=`echo "$version" | awk '{split($0, array, ".")} END{print array[3]}'`
+
+    # if major > 1 then it represents the major java version (e.g. Java 9+)
+    # we want 1.8.0_44 to return 8, 9.0.1 to return 9
+    if [ "x$major" = "x" ]; then
+        return 0
+    elif [ "$major" -gt "1" ]; then
+        echo $major
+    else
+        echo $minor
+    fi
+}
+
+
+# java_bin=`findFirstJavaForMinimumMajorVersion "<java_cmds separated by colon>" "1.7"`
+findFirstJavaExecutableByMinimumMajorVersion()
+{
+    local java_bins="$1"
+    local min_java_ver="$2"
+    local target_min_java_maj_ver=`parseJavaMajorVersion "$min_java_ver"`
+
+    local IFS=":"
+    for java_bin in $java_bins; do
+        java_ver=`getJavaVersion "$java_bin"`
+        logJavaSearchDebug "evaluting if $java_bin with version $java_ver >= 1.$target_min_java_maj_ver"
+        java_maj_ver=`parseJavaMajorVersion "$java_ver"`
+        if [ "$java_maj_ver" != "" ] && [ $java_maj_ver -ge $target_min_java_maj_ver ]; then
+             echo "$java_bin"
+             return 1
+        fi
+    done
+    return 0
+}
+
+
+# java_bin=`findLatestJavaExecutableByMajorVersion "<java_cmds separated by colon>"`
+findLatestJavaExecutableByMajorVersion()
+{
+    local java_bins="$1"
+    local latest_java_maj_ver=0
+    local latest_java_bin=""
+
+    local IFS=":"
+    for java_bin in $java_bins; do
+        java_ver=`getJavaVersion "$java_bin"`
+        logJavaSearchDebug "evaluting if $java_bin is a new major java version on system"
+        java_maj_ver=`parseJavaMajorVersion "$java_ver"`
+        if [ "$java_maj_ver" != "" ] && [ $java_maj_ver -gt $latest_java_maj_ver ]; then
+             latest_java_maj_ver=$java_maj_ver
+             latest_java_bin=$java_bin
+        fi
+    done
+
+    echo "$latest_java_bin"
+}
+
+
+# JAVA_CLASSPATH=`buildJavaClasspath $jarDir`
+buildJavaClasspath()
+{
+  # path to main application directory
+  TMPAPPDIR="$1"
+
+  if [ -d "$TMPAPPDIR" ]; then
+    for file in "$TMPAPPDIR"/*.jar; do
+      TMPCLASSPATH=`appendPath "$TMPCLASSPATH" "$file"`
+    done
+  fi
+
+  echo $TMPCLASSPATH
+}
+
+
+# if running $PID_FILE; then
+#   echo "running..."
+# fi
+running()
+{
+    local PID=$(cat "$1" 2>/dev/null) || return 1
+    #[ -f $1 ] || return 1
+    #PID=$(cat $1)
+    ps -p $PID >/dev/null 2>/dev/null || return 1
+    #return 0
+    # kill -0 does not work if the daemon was started with a different user
+    #kill -0 "$PID" 2>/dev/null
+}
+
+# verifyNotRunning $JAVA_PID
+verifyNotRunning()
+{
+  TMPPID=$1
+  if [ -f $TMPPID ]
+  then
+    if running $TMPPID
+    then
+      PID=`cat $TMPPID 2>/dev/null`
+      echo "$NAME is currently running with pid $PID"
+      exit 1
+    else
+      # dead pid file - remove
+      rm -f $TMPPID
+    fi
+  fi
+}
+
+# checkRunning $STRATUS_PID
+checkRunning()
+{
+  TMPPID=$1
+  if [ -f $TMPPID ]
+  then
+    if ! running $TMPPID
+    then
+      echo "Warning: app is not running!"
+      # dead pid file - remove
+      rm -f $TMPPID
+    fi
+  else
+    echo "$NAME is not currently running!"
+  fi
+}
+
+
+stopJavaApp()
+{
+  TMPPID=$1
+  PID=`cat $TMPPID 2>/dev/null`
+  local timeout=60
+  while running $TMPPID && [ $timeout -gt 0 ]; do
+    kill $PID 2>/dev/null
+    sleep 1
+    printf "."
+    timeout=`expr $timeout - 1`
+  done
+  if [ ! $timeout -gt 0 ]
+  then 
+      echo "Unable to kill $NAME within timeout; may need to kill it manually [pid: $TMPPID]"
+  else
+      rm -f $TMPPID
+  fi
+}
+
+#
+# find java runtime that meets our minimum requirements (unless already set)
+#
+if [ -z "$JAVA_EXE" ]; then
+    ALL_JAVA_EXES=`findAllJavaExecutables`
+
+    JAVA_EXE=`findFirstJavaExecutableByMinimumMajorVersion "$ALL_JAVA_EXES" "$MIN_JAVA_VERSION"`
+fi
+
+if [ -z "$JAVA_EXE" ]; then
+    echo "Unable to find Java runtime on system with version >= $MIN_JAVA_VERSION"
+
+    min_java_maj_ver=`parseJavaMajorVersion "$MIN_JAVA_VERSION"`
+
+    if [ -f "/etc/debian_version" ]; then
+        echo "Try running 'sudo apt-get install openjdk-$min_java_maj_ver-jre-headless' or"
+    elif [ -f "/etc/redhat-release" ]; then
+        echo "Try running 'su -c \"yum install java-1.$min_java_maj_ver.0-openjdk\"' OR"
+    fi
+
+    echo "Visit http://java.com to download and install one for your system"
+    exit 1
+fi
+
+JAVA_VERSION=`getJavaVersion "$JAVA_EXE"`
+
+
+#
+# build classpath either in absolute or relative form
+#
+if [ $WORKING_DIR_MODE = "RETAIN" ]; then
+    # absolute to app home
+    APP_JAVA_CLASSPATH=`buildJavaClasspath "$APP_HOME/$LIB_DIR"`
+    APP_LIB_DIR_DEBUG="$APP_HOME/$LIB_DIR"
+else
+    # jars will be relative to working dir (app home)
+    APP_JAVA_CLASSPATH=`buildJavaClasspath "$LIB_DIR"`
+    APP_LIB_DIR_DEBUG="<app_home>/$LIB_DIR"
+fi
+
+
+#
+# classpath have anything?
+#
+if [ -z "$APP_JAVA_CLASSPATH" ]; then
+    echo "No jars found for loading into classpath (empty lib dir? $APP_HOME/$LIB_DIR)"
+    exit 1
+fi
+
+
+#
+# special case for daemon: first argument to script should be action
+#
+APP_ACTION_ARG=
+
+# first arg for a daemon is the action to do such as start vs. stop
+if [ "$TYPE" = "DAEMON" ] && [ $# -gt 0 ]; then
+    APP_ACTION_ARG=$1
+    shift
+fi
+
+# append extra app and java args
+JAVA_ARGS="$JAVA_ARGS $EXTRA_JAVA_ARGS"
+APP_ARGS="$APP_ARGS $EXTRA_APP_ARGS"
+
+for a in "$@"; do
+    if [ $LAUNCHER_DEBUG = "1" ]; then echo "[LAUNCHER] processing arg: $a"; fi
+
+    # does the argument need escaped?
+    if [ "$a" = `echo "$a" | sed 's/ //g'` ]; then
+        # java system property and processing enabled?
+        case "$a" in
+            -D*)
+                JAVA_ARGS="$JAVA_ARGS $a" ;;
+            *)
+                APP_ARGS="$APP_ARGS $a" ;;
+        esac
+    else
+        # java system property and processing enabled?
+        case "$a" in
+            -D*)
+                JAVA_ARGS="$JAVA_ARGS \"$a\"" ;;
+            *)
+                APP_ARGS="$APP_ARGS \"$a\"" ;;
+        esac
+    fi
+
+    shift
+done
+
+
+SYS_MEM_MB=`getSystemMemoryMB`
+logLauncherDebug "detected system memory: $SYS_MEM_MB MB"
+
+#
+# include -Xrs flag?
+#
+if [ "$INCLUDE_JAVA_XRS" = "1" ]; then
+    case "$JAVA_ARGS" in
+        *-Xrs*)
+            ;;
+        *)
+            JAVA_ARGS="-Xrs $JAVA_ARGS" ;;
+    esac
+fi
+
+#
+# add max memory java option (if specified)
+#
+if [ ! -z $JAVA_MAX_MEM_PCT ]; then
+    if [ $SYS_MEM_MB -le 0 ]; then
+        echo "Unable to detect system memory to set java max memory"
+        exit 1
+    fi
+    MM=`pctOf $SYS_MEM_MB $JAVA_MAX_MEM_PCT`
+    JAVA_ARGS="-Xmx${MM}m $JAVA_ARGS"
+elif [ ! -z $JAVA_MAX_MEM ]; then
+    JAVA_ARGS="-Xmx${JAVA_MAX_MEM}m $JAVA_ARGS"
+fi
+
+
+#
+# add min memory java option (if specified)
+#
+if [ ! -z $JAVA_MIN_MEM_PCT ]; then
+    if [ $SYS_MEM_MB -le 0 ]; then
+        echo "Unable to detect system memory to set java min memory"
+        exit 1
+    fi
+    MM=`pctOf $SYS_MEM_MB $JAVA_MIN_MEM_PCT`
+    JAVA_ARGS="-Xms${MM}m $JAVA_ARGS"
+elif [ ! -z $JAVA_MIN_MEM ]; then
+    JAVA_ARGS="-Xms${JAVA_MIN_MEM}m $JAVA_ARGS"
+fi
+
+
+#
+# if a daemon is being run in foreground then the type is still console
+#
+RUN_TYPE=$TYPE
+if [ "$APP_ACTION_ARG" = "--run" ]; then
+    RUN_TYPE="CONSOLE"
+fi
+
+
+#
+# symlink of java requested?
+# this may break on some systems so we need to test it works
+#
+if [ "$SYMLINK_JAVA" = "1" ]; then
+    TARGET_SYMLINK="$APP_RUN_DIR/$NAME-java"
+    # if link already exists then try to delete it
+    if [ -L "$TARGET_SYMLINK" ]; then
+        rm -f "$TARGET_SYMLINK"
+    fi
+    ln -s "$JAVA_EXE" "$TARGET_SYMLINK" > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        # symlink succeeded (test if it works)
+        symlink_test=$("$TARGET_SYMLINK" -version 2>/dev/null)
+        if [ $? -eq 0 ]; then
+            # symlink worked
+            NON_SYMLINK_JAVA_EXE="$JAVA_EXE"
+            JAVA_EXE="$TARGET_SYMLINK"
+        else
+            if [ $LAUNCHER_DEBUG = "1" ]; then echo "[LAUNCHER] symlink failed for java; ignoring"; fi
+        fi
+    fi
+fi
+
+
+#
+# create java command to execute
+#
+
+# NOTE: placing double/single quotes around classpath causes an issues using
+# --start with a small number of systemd versions
+RUN_ARGS="-Dlauncher.name=$NAME -Dlauncher.type=$RUN_TYPE \"-Dlauncher.app.dir=$APP_HOME\" $JAVA_ARGS -classpath \"$APP_JAVA_CLASSPATH\" $MAIN_CLASS $APP_ARGS"
+RUN_CMD="\"$JAVA_EXE\" $RUN_ARGS"
+
+#
+# debug for either console/daemon apps
+#
+logLauncherDebug "working_dir: `pwd`"
+logLauncherDebug "app_home: $APP_HOME"
+logLauncherDebug "run_dir: $APP_RUN_DIR_DEBUG"
+logLauncherDebug "log_dir: $APP_LOG_DIR_DEBUG"
+logLauncherDebug "lib_dir: $APP_LIB_DIR_DEBUG"
+logLauncherDebug "pid_file: $APP_PID_FILE_DEBUG"
+logLauncherDebug "java_min_version_required: $MIN_JAVA_VERSION"
+if [ ! -z "$NON_SYMLINK_JAVA_EXE" ]; then
+    logLauncherDebug "java_exe: $NON_SYMLINK_JAVA_EXE"
+    logLauncherDebug "java_symlink: $JAVA_EXE"
+else
+    logLauncherDebug "java_exe: $JAVA_EXE"
+fi
+logLauncherDebug "java_version: $JAVA_VERSION"
+logLauncherDebug "java_run: $RUN_CMD"
+#
+# run console app
+#
+
+eval $RUN_CMD
+
+#
+# end of script
+#
