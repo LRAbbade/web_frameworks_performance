@@ -14,6 +14,7 @@ This work intends to extend the findings of [Abbade et al. on Performance Compar
 + Python - [Tornado](https://www.tornadoweb.org/en/stable/)
 + Python - [AIOHTTP](https://docs.aiohttp.org/en/stable/)
 + Java - [Spring](https://spring.io/)
++ Java - [Reactive Spring](https://spring.io/reactive)
 + Java - [Jooby](https://github.com/jooby-project/jooby)
 + Java - [Proteus](https://github.com/noboomu/proteus)
 + Java - [Vertx](https://vertx.io/)
