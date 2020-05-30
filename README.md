@@ -25,6 +25,7 @@ This work intends to extend the findings of [Abbade et al. on Performance Compar
 + Javascript - [Koa](https://koajs.com/)
 + PHP - [Laravel](https://laravel.com/)
 + Scala - [akka](https://akka.io/)
++ Scala - [Play](https://www.playframework.com/)
 + C# - [.net](https://docs.microsoft.com/en-us/dotnet/)
 + C++ - [wt](https://www.webtoolkit.eu/wt/)
 + C++ - [oat++](https://github.com/oatpp/oatpp)
