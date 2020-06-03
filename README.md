@@ -5,17 +5,17 @@ A comprehensive performance comparison of web frameworks.
 This work intends to extend the findings of [Abbade et al. on Performance Comparison of Programming Languages for Internet of Things Middleware](https://onlinelibrary.wiley.com/doi/abs/10.1002/ett.3891), in which Python's Flask, Javascript's Express, and Java's Spring, were compared in an IoT Middleware scenario. In this work, the focus has been shifted to web applications. The following frameworks are tested (the source code for each API is in a folder with its name):
 
 + C# - [.net](https://docs.microsoft.com/en-us/dotnet/)
-+ C++ - [oat++](https://github.com/oatpp/oatpp)
-+ C++ - [poco](https://pocoproject.org/)
-+ C++ - [silicon](https://github.com/matt-42/silicon)
-+ C++ - [websocketpp](https://github.com/zaphoyd/websocketpp)
-+ C++ - [wt](https://www.webtoolkit.eu/wt/)
++ C++ - [Oat++](https://github.com/oatpp/oatpp)
++ C++ - [Poco](https://pocoproject.org/)
++ C++ - [Silicon](https://github.com/matt-42/silicon)
++ C++ - [Websocketpp](https://github.com/zaphoyd/websocketpp)
++ C++ - [Wt](https://www.webtoolkit.eu/wt/)
 + Clojure - [Composure](https://github.com/metosin/compojure-api)
 + Elixir - [Phoenix](https://www.phoenixframework.org/)
 + Go - [FastHTTP](https://github.com/valyala/fasthttp)
-+ Go - [gin](https://github.com/gin-gonic/gin)
-+ Go - [mux](https://github.com/gorilla/mux)
-+ Go - [net/http](https://golang.org/pkg/net/http/)
++ Go - [Gin](https://github.com/gin-gonic/gin)
++ Go - [Mux](https://github.com/gorilla/mux)
++ Go - [Net/http](https://golang.org/pkg/net/http/)
 + Java - [Jooby](https://github.com/jooby-project/jooby)
 + Java - [Proteus](https://github.com/noboomu/proteus)
 + Java - [Reactive Spring](https://spring.io/reactive)
@@ -40,9 +40,9 @@ This work intends to extend the findings of [Abbade et al. on Performance Compar
 + Ruby - [Rails](https://rubyonrails.org/)
 + Rust - [Actix](https://actix.rs/)
 + Rust - [Rocket](https://github.com/SergioBenitez/Rocket)
++ Scala - [Akka](https://akka.io/)
 + Scala - [Play](https://www.playframework.com/)
 + Scala - [Vertx](https://vertx.io/)
-+ Scala - [akka](https://akka.io/)
 
 The main objective is to test different languages and frameworks, both sync and async, to understand:
 
