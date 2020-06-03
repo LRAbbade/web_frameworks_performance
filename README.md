@@ -40,7 +40,7 @@ This work intends to extend the findings of [Abbade et al. on Performance Compar
 + Ruby - [Rails](https://rubyonrails.org/)
 + Rust - [Actix](https://actix.rs/)
 + Rust - [Rocket](https://github.com/SergioBenitez/Rocket)
-+ Scala - [Akka](https://akka.io/)
++ Scala - [Lagom](https://www.lagomframework.com/)
 + Scala - [Play](https://www.playframework.com/)
 + Scala - [Vertx](https://vertx.io/)
 
