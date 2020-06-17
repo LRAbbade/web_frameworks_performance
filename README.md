@@ -16,33 +16,33 @@ This work intends to extend the findings of [Abbade et al. on Performance Compar
 + Go - [Gin](https://github.com/gin-gonic/gin)
 + Go - [Mux](https://github.com/gorilla/mux)
 + Go - [Net/http](https://golang.org/pkg/net/http/)
-+ Java - [Jooby](https://github.com/jooby-project/jooby)
-+ Java - [Proteus](https://github.com/noboomu/proteus)
-+ Java - [Reactive Spring](https://spring.io/reactive)
-+ Java - [Spring](https://spring.io/)
++ Java - [Jooby](https://github.com/jooby-project/jooby) :white_check_mark:
++ Java - [Proteus](https://github.com/noboomu/proteus) :white_check_mark:
++ Java - [Reactive Spring](https://spring.io/reactive) :white_check_mark:
++ Java - [Spring](https://spring.io/) :white_check_mark:
 + Java - [Vertx](https://vertx.io/)
-+ Javascript - [Express](https://expressjs.com/)
-+ Javascript - [Fastify](https://www.fastify.io/)
-+ Javascript - [Koa](https://koajs.com/)
-+ Javascript - [Node.js](https://nodejs.org/en/)
-+ Javascript - [Restify](http://restify.com/)
++ Javascript - [Express](https://expressjs.com/) :white_check_mark:
++ Javascript - [Fastify](https://www.fastify.io/) :white_check_mark:
++ Javascript - [Koa](https://koajs.com/) :white_check_mark:
++ Javascript - [Node.js](https://nodejs.org/en/) :white_check_mark:
++ Javascript - [Restify](http://restify.com/) :white_check_mark:
 + Kotlin - [Ktor](https://ktor.io/)
-+ PHP - [Laravel](https://laravel.com/)
-+ Python - [AIOHTTP](https://docs.aiohttp.org/en/stable/)
-+ Python - [Bottle](https://bottlepy.org/docs/dev/)
-+ Python - [CherryPy](https://cherrypy.org/)
-+ Python - [Django](https://www.djangoproject.com/)
-+ Python - [Django ASGI](https://docs.djangoproject.com/en/3.0/howto/deployment/asgi/)
-+ Python - [FastAPI](https://fastapi.tiangolo.com/)
-+ Python - [Flask](https://flask.palletsprojects.com/en/1.1.x/)
-+ Python - [Pyramid](https://trypyramid.com/)
-+ Python - [Sanic](https://sanic.readthedocs.io/en/latest/)
-+ Python - [Tornado](https://www.tornadoweb.org/en/stable/)
++ PHP - [Laravel](https://laravel.com/) :white_check_mark:
++ Python - [AIOHTTP](https://docs.aiohttp.org/en/stable/) :white_check_mark:
++ Python - [Bottle](https://bottlepy.org/docs/dev/) :white_check_mark:
++ Python - [CherryPy](https://cherrypy.org/) :white_check_mark:
++ Python - [Django](https://www.djangoproject.com/) :white_check_mark:
++ Python - [Django ASGI](https://docs.djangoproject.com/en/3.0/howto/deployment/asgi/) :white_check_mark:
++ Python - [FastAPI](https://fastapi.tiangolo.com/) :white_check_mark:
++ Python - [Flask](https://flask.palletsprojects.com/en/1.1.x/) :white_check_mark:
++ Python - [Pyramid](https://trypyramid.com/) :white_check_mark:
++ Python - [Sanic](https://sanic.readthedocs.io/en/latest/) :white_check_mark:
++ Python - [Tornado](https://www.tornadoweb.org/en/stable/) :white_check_mark:
 + R - [Plumber](https://www.rplumber.io/)
 + Ruby - [Rails](https://rubyonrails.org/)
 + Rust - [Actix](https://actix.rs/)
 + Rust - [Rocket](https://github.com/SergioBenitez/Rocket)
-+ Scala - [Play](https://www.playframework.com/)
++ Scala - [Play](https://www.playframework.com/) :white_check_mark:
 
 The main objective is to test different languages and frameworks, both sync and async, to understand:
 
