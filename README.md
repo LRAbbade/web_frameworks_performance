@@ -20,6 +20,7 @@ This work intends to extend the findings of [Abbade et al. on Performance Compar
 + Java - [Proteus](https://github.com/noboomu/proteus)
 + Java - [Reactive Spring](https://spring.io/reactive)
 + Java - [Spring](https://spring.io/)
++ Java - [Vertx](https://vertx.io/)
 + Javascript - [Express](https://expressjs.com/)
 + Javascript - [Fastify](https://www.fastify.io/)
 + Javascript - [Koa](https://koajs.com/)
@@ -31,6 +32,7 @@ This work intends to extend the findings of [Abbade et al. on Performance Compar
 + Python - [Bottle](https://bottlepy.org/docs/dev/)
 + Python - [CherryPy](https://cherrypy.org/)
 + Python - [Django](https://www.djangoproject.com/)
++ Python - [Django ASGI](https://docs.djangoproject.com/en/3.0/howto/deployment/asgi/)
 + Python - [FastAPI](https://fastapi.tiangolo.com/)
 + Python - [Flask](https://flask.palletsprojects.com/en/1.1.x/)
 + Python - [Pyramid](https://trypyramid.com/)
@@ -41,7 +43,6 @@ This work intends to extend the findings of [Abbade et al. on Performance Compar
 + Rust - [Actix](https://actix.rs/)
 + Rust - [Rocket](https://github.com/SergioBenitez/Rocket)
 + Scala - [Play](https://www.playframework.com/)
-+ Scala - [Vertx](https://vertx.io/)
 
 The main objective is to test different languages and frameworks, both sync and async, to understand:
 
