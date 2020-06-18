@@ -20,7 +20,7 @@ This work intends to extend the findings of [Abbade et al. on Performance Compar
 + :white_check_mark: Java - [Proteus](https://github.com/noboomu/proteus)
 + :white_check_mark: Java - [Reactive Spring](https://spring.io/reactive)
 + :white_check_mark: Java - [Spring](https://spring.io/)
-+ :black_square_button: Java - [Vertx](https://vertx.io/)
++ :white_check_mark: Java - [Vertx](https://vertx.io/)
 + :white_check_mark: Javascript - [Express](https://expressjs.com/)
 + :white_check_mark: Javascript - [Fastify](https://www.fastify.io/)
 + :white_check_mark: Javascript - [Koa](https://koajs.com/)
