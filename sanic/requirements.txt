@@ -11,7 +11,7 @@ hyperframe==5.2.0
 idna==2.9
 multidict==4.7.6
 rfc3986==1.4.0
-sanic==20.3.0
+sanic==20.12.6
 sniffio==1.1.0
 ujson==2.0.3
 urllib3==1.25.9
